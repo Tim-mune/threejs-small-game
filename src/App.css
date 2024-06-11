@@ -1,0 +1,14 @@
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0 auto;
+  /* padding: 2rem; */
+  position: fixed;
+  overflow: hidden;
+  text-align: center;
+}
+
+canvas {
+  width: 100vw;
+  height: 100vh;
+}
