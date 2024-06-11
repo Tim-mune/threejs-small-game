@@ -170,7 +170,7 @@ const Bounds = ({ count = 1 }) => {
       <mesh
         geometry={boxGeomerty}
         material={wallMaterial}
-        position={[2.15, 0.75, -(length * 2) + 2]}
+        position={[2.15, 0.75, -(count * 2) + 2]}
         scale={[0.3, 1.5, 4 * count]}
         castShadow
       />
@@ -179,7 +179,7 @@ const Bounds = ({ count = 1 }) => {
         <mesh
           geometry={boxGeomerty}
           material={wallMaterial}
-          position={[-2.15, 0.6, -(length * 2) + 2]}
+          position={[-2.15, 0.6, -(count * 2) + 2]}
           scale={[0.3, 1.5, 4 * count]}
           receiveShadow
         />
@@ -200,12 +200,12 @@ const Level = ({ count, types = [Axe, Limbo, Spinner] }) => {
   }, [count, types]);
   return (
     <>
-      <Bounds count={count + 2} />
       <BlockStart position={[0, 0, 0]} />
       {blocks.map((Block, index) => {
         return <Block key={index} position={[0, 0, -(index + 1) * 4]} />;
       })}
       <BlockEnd position={[0, 0, -(count + 1) * 4]} />
+      <Bounds count={count + 2} />
     </>
   );
 };
