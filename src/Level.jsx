@@ -1,6 +1,7 @@
+import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { RigidBody } from "@react-three/rapier";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 // THREE.ColorManagemen.legacyMode = false;
 
@@ -25,7 +26,7 @@ const BlockStart = ({ position = [0, 0, 0] }) => {
   );
 };
 
-const Spinner = ({ position = [0, 0, 0] }) => {
+export const Spinner = ({ position = [0, 0, 0] }) => {
   const obstacleRef = useRef();
   const [speed] = useState(
     (Math.random() + 0.2) * Math.random() < 0.5 ? -1 : 1
@@ -65,7 +66,7 @@ const Spinner = ({ position = [0, 0, 0] }) => {
   );
 };
 
-const Limbo = ({ position = [0, 0, 0] }) => {
+export const Limbo = ({ position = [0, 0, 0] }) => {
   const obstacleRef = useRef();
   const [timeOffSet] = useState(Math.random() * Math.PI * 2);
 
@@ -104,7 +105,7 @@ const Limbo = ({ position = [0, 0, 0] }) => {
     </group>
   );
 };
-const Axe = ({ position = [0, 0, 0] }) => {
+export const Axe = ({ position = [0, 0, 0] }) => {
   const obstacleRef = useRef();
   const [timeOffSet] = useState(Math.random() * Math.PI * 2);
 
@@ -144,26 +145,67 @@ const Axe = ({ position = [0, 0, 0] }) => {
   );
 };
 const BlockEnd = ({ position = [0, 0, 0] }) => {
+  const hambuger = useGLTF("/hamburger.glb");
+  hambuger.scene.children.forEach((child) => {
+    child.castShadow = true;
+  });
   return (
     <group>
       <mesh
         geometry={boxGeomerty}
         material={floor1Material}
         scale={[4, 0.2, 4]}
-        position={position || [0, 0, 0]}
+        position={position || [0, 0.1, position[2]]}
         receiveShadow
       />
+      <RigidBody colliders="hull" type="fixed" restitution={0.2} friction={0}>
+        <primitive object={hambuger.scene} scale={0.2} position={position} />
+      </RigidBody>
     </group>
   );
 };
-const Level = () => {
+const Bounds = ({ count = 1 }) => {
   return (
     <>
-      <BlockStart position={[0, 0, 16]} />
-      <Spinner position={[0, 0, 12]} />
-      <Limbo position={[0, 0, 8]} />
-      <Axe position={[0, 0, 4]} />
-      <BlockEnd position={[0, 0, 0]} />
+      <mesh
+        geometry={boxGeomerty}
+        material={wallMaterial}
+        position={[2.15, 0.75, -(length * 2) + 2]}
+        scale={[0.3, 1.5, 4 * count]}
+        castShadow
+      />
+
+      <RigidBody type="fixed">
+        <mesh
+          geometry={boxGeomerty}
+          material={wallMaterial}
+          position={[-2.15, 0.6, -(length * 2) + 2]}
+          scale={[0.3, 1.5, 4 * count]}
+          receiveShadow
+        />
+      </RigidBody>
+    </>
+  );
+};
+const Level = ({ count, types = [Axe, Limbo, Spinner] }) => {
+  const blocks = useMemo(() => {
+    const blocks = [];
+    Array(count)
+      .fill(0)
+      .map((item) => {
+        const target = Math.floor(Math.random() * types.length);
+        blocks.push(types[target]);
+      });
+    return blocks;
+  }, [count, types]);
+  return (
+    <>
+      <Bounds count={count + 2} />
+      <BlockStart position={[0, 0, 0]} />
+      {blocks.map((Block, index) => {
+        return <Block key={index} position={[0, 0, -(index + 1) * 4]} />;
+      })}
+      <BlockEnd position={[0, 0, -(count + 1) * 4]} />
     </>
   );
 };

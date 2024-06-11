@@ -1,7 +1,7 @@
 import React from "react";
 import Lights from "./Lights";
 import { OrbitControls } from "@react-three/drei";
-import Level from "./Level";
+import Level, { Axe, Limbo, Spinner } from "./Level";
 import { Physics } from "@react-three/rapier";
 
 const Experience = () => {
@@ -10,7 +10,7 @@ const Experience = () => {
       <OrbitControls makeDefault />
       <Physics debug>
         <Lights />
-        <Level />
+        <Level types={[Axe, Spinner, Limbo]} count={5} />
       </Physics>
     </>
   );
